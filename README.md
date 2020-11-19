@@ -1,1 +1,1 @@
-# Smart-Prosthetics-Predicting-Grasp-and-Lift-motions-
+# Smart Prosthetics: Predicting Grasp and Lift Motions
