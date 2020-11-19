@@ -1,1 +1,1 @@
-# Smart Prosthetics: Predicting Grasp and Lift Motions
+# Bionic AI: Predicting Grasp and Lift Motions
