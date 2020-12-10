@@ -15,45 +15,52 @@ from scipy.signal import butter, lfilter
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import pickle
+from tqdm import tqdm
+ 
 
-## Function to get Individual Subjects's Data: 
-def getSubjectsData(test_series=3,Test=False):
 
+
+def getSubjectsData(testSeries=3,test=False):
+  ''' Function to get Individual Subjects's Data
+  Arguments: test_series (int), Test(boolean)
+  Output: Subject's EEG Data (df), Subjects Event Data (df)
+  '''
   # define which series will be used as the test series
-  testSeries = test_series
-  trainSeries = list(np.arange(1,9))
-  trainSeries.remove(testSeries)
+  test = testSeries
+  train = list(np.arange(1,9))
+  train.remove(test)
 
   
   path = '/content/drive/My Drive/Colab Notebooks/Bionic AI/Kaggle EEG Data/train/'
 
-  subjects_data = []
-  subjects_events = []
+  subjectsData = []
+  subjectsEvents = []
 
 
-  if Test == False:
+  if test == False:
     for i in range(1,13):
-  # initiate the dartaframes by passing it the first series of subject i
+  # initiate the dartaframes by passing them the first series of subject i
       stackData = pd.read_csv(path + f'subj{i}_series1_data.csv').iloc[:,1:]
       stackEvents = pd.read_csv(path + f'subj{i}_series1_events.csv').iloc[:,1:]
-  # for subject i, import data from all training series and stack them
-      for j in trainSeries[1:]:
+  # for subject i, import data from all other training series and stack them
+      for j in train[1:]: 
           data = pd.read_csv(path + f'subj{i}_series{j}_data.csv').iloc[:,1:]
           stackData = pd.concat([stackData,data])  
       
           events = pd.read_csv(path + f'subj{i}_series{j}_events.csv').iloc[:,1:]
           stackEvents = pd.concat([stackEvents,events])
-  # normalize the stack of series data for subject i
+  # normalize the stacked series data for subject i
       stackDataNorm = ((stackData - stackData.mean(axis=0))/stackData.std(axis=0))
-    
+  # Rest the index for both 
       stackDataNorm = stackDataNorm.reset_index(drop=True)
       stackEvents = stackEvents.reset_index(drop=True)
 
-      subjects_data.append(stackDataNorm)
-      subjects_events.append(stackEvents)
+      subjectsData.append(stackDataNorm)
+      subjectsEvents.append(stackEvents)
 
-    return subjects_data, subjects_events
+    return subjectsData, subjectsEvents
 
+# if test= True, only return the test series for a subject
   else:
     for i in range(1,13):
    # get the testing data for all subjects. AKA, the series that will be used for testing for each subject i 
@@ -62,87 +69,65 @@ def getSubjectsData(test_series=3,Test=False):
 
       dataNorm = ((data - data.mean(axis=0))/data.std(axis=0))
 
-      subjects_data.append(dataNorm)
-      subjects_events.append(events)
+      subjectsData.append(dataNorm)
+      subjectsEvents.append(events)
 
-    return subjects_data, subjects_events
+    return subjectsData, subjectsEvents
 
 
-## function to get a specfic series data for a subject
-def getSeriesData(subject_num,series_num):
+
+
+def getSeriesEvents(subjectNum,seriesNum):
+  ''' Function to extract a specific series' events for a given subject
+  Arguments: subject_num (int), series_num (int)
+  Output: Subjects EEG Data (df), Subject's Event Data (df)
+  '''
   path = '/content/drive/My Drive/Colab Notebooks/Bionic AI/Kaggle EEG Data/train/'
-  subject = pd.read_csv(path + f'subj{subject_num}_series{series_num}_data.csv').iloc[:,1:]
-  events = pd.read_csv(path + f'subj{subject_num}_series{series_num}_events.csv').iloc[:,1:]
+  subject = pd.read_csv(path + f'subj{subjectNum}_series{seriesNum}_data.csv').iloc[:,1:]
+  events = pd.read_csv(path + f'subj{subjectNum}_series{seriesNum}_events.csv').iloc[:,1:]
   subject = (subject - subject.mean(axis=0)) / subject.std(axis=0)
-  return events
+  return subject, events
 
 
-## Visualizing All Trials
-def graphAllTrials(subject_num,series_num):
-
-    events = getSeriesData(subject_num,series_num)
-    Motions = events.columns.tolist()
-    timeFrames = []
-    vals = []
-    count = 0
-    for M in Motions:
-      # plot each motion separately
-        tf = events[events[M] == 1].index.tolist()
-        val = np.ones(len(tf))
-      # adding 0.5 to each motion to avoid overlapping and for better visualization
-        val += count
-        vals = list(vals)
-        count += 0.05
-        timeFrames.append(tf)
-        vals.append(val)
-
-    plt.style.use('dark_background')
-    for i in range(len(Motions)):   
-      plt.rcParams["figure.figsize"] = (30,1)
-      plt.scatter(timeFrames[i], vals[i])
 
 
-## Visualizing a single trials
-def graphOneTrial(subject_num,series_num):
-  events = getSeriesData(subject_num,series_num)
+def graphTrials(subjectNum,seriesNum, oneTrial=False):
+  ''' Function to graph all events within all trials (or just one if oneTrial=True) for one series for a sbject
+  Arguments: subjectNum (int), seriesNum (int), oneTrial (boolean)
+  Output: graph
+  ''' 
+  plt.style.use('dark_background')
+  fig = plt.figure(figsize=[30,2])
+  plt.xlabel('Time(ms)', fontsize=15)
+  
+  _ , events = getSeriesEvents(subjectNum,seriesNum)
   Motions = events.columns.tolist()
-  timeFrames = []
-  vals = []
-  count = 0
+  
+  
   for M in Motions:
-    tf = events[events[M] == 1].index.tolist()[:150]
-    val = np.ones(len(tf))
-    val += count
-    vals = list(vals)
-    count += 0.05
-    timeFrames.append(tf)
-    vals.append(val)
- 
-  traces = []
-  for i in range(len(Motions)):
-    trace = go.Scatter(
-      x=timeFrames[i],
-      y=vals[i],
-      name=Motions[i])
-    traces.append(trace)
-
-  fig = make_subplots(specs=[[{"secondary_y": False}]])
-  for trace in traces:
-    fig.add_trace(trace)
-  fig['layout'].update(height = 300, width = 1600, template='plotly_dark')
-  fig.update_yaxes(visible=False)
-  fig.show()
+    if oneTrial==False:
+      tf = events[events[M] == 1].index.tolist()
+    else:
+      tf = events[events[M] == 1].index.tolist()[:150]
+    event = [M] * len(tf) 
+    plt.scatter(tf, event)
 
 
-## Function to Get All Data
-def getAllData():
-# define which subject will be used for testing
-  trainSeries = [1,2,4,5,6,7,8]
-  testSeries = 3
+
+
+def getAllData(testSeries=3):
+  ''' Function to stack data from all subjects
+  Arguments: testSeries (int)
+  Output: All EEG data (df), all events (df)
+  '''
+  # define which series will be used as the test series
+  train = list(np.arange(1,9))
+  train.remove(testSeries)
+
   path = '/content/drive/My Drive/Colab Notebooks/Bionic AI/Kaggle EEG Data/train/'
 
-  subjects_data = []
-  subjects_events = []
+  subjectsData = []
+  subjectsEvents = []
 
   for i in range(1,13):
     print(f'reading subject {i} out of 12')
@@ -150,19 +135,19 @@ def getAllData():
     stackData = pd.read_csv(path + f'subj{i}_series1_data.csv').iloc[:,1:]
     stackEvents = pd.read_csv(path + f'subj{i}_series1_events.csv').iloc[:,1:]
     # stack the rest of the series below the first for each subject i
-    for j in trainSeries:
+    for j in train:
         data = pd.read_csv(path + f'subj{i}_series{j}_data.csv').iloc[:,1:]
         stackData = pd.concat([stackData,data])  
       
         events = pd.read_csv(path + f'subj{i}_series{j}_events.csv').iloc[:,1:]
         stackEvents = pd.concat([stackEvents,events])
 
-    subjects_data.append(stackData)
-    subjects_events.append(stackEvents)
+    subjectsData.append(stackData)
+    subjectsEvents.append(stackEvents)
     # concatenate all subjects data
   print(f'concatenating all data')
-  allData = pd.concat(subjects_data)
-  allEvents = pd.concat(subjects_events)
+  allData = pd.concat(subjectsData)
+  allEvents = pd.concat(subjectsEvents)
     # normalize the final dataframe and reset indices     
   dataNorm = ((allData - allData.mean(axis=0))/allData.std(axis=0))
     
@@ -173,54 +158,74 @@ def getAllData():
 
 
 
-## Function to Get Truncated Data for a Given Motion
-def truncFrame(data,events,event):
 
-  motionIndex = events[events[event] == 1].index.to_numpy()
-
-  trunFrameRows = len(data.iloc[motionIndex[0]-100:motionIndex[0+149]+50,:][::20])
-  truncFrame = np.zeros([trunFrameRows,32])
-
+def truncFrame(data,allEvents,ev,step, window):
+  ''' Function to get truncated data for a single event 
+  for a timeframe of 150 ms before and after the event onset
+  Arguments: subject's EEG data(df), subjects EEG events(df), event of choice('string'), step size (int), rolling average window size (int)
+  Output: truncated EEG data for the event(df)
+  '''
+  motionIndex = events[0][events[0][ev] == 1].index.to_numpy()
+  numRows = len(subjects[0].iloc[motionIndex[0]-100:motionIndex[0+149]+50,:][::step])
+  allFrames = np.zeros((numRows,32))
+  trials = 0
   i = 0
-  count = 0
-
-  while i < len(motionIndex):
-    frame = data.iloc[motionIndex[i]-100:motionIndex[i+149]+50,:].to_numpy()
-    truncFrame += frame[::20]
-    count += 1
+  while i < len(motionIndex/150):
+    truncFrame = subjects[0].iloc[motionIndex[i]-100:motionIndex[i+149]+50,:][::step].to_numpy()
+    allFrames += truncFrame
+    trials += 1
     i += 150
-  truncFrame = truncFrame/count
-  return truncFrame
-
-
-
-## Function to Get Plot of Truncated Data for a Given Motions
-def getGraph(data,events,event,ave=False):
+  allFrames /= trials
+  allFramesAve = pd.DataFrame(allFrames).rolling(window).mean().iloc[window-1:,:]
   
+  return allFramesAve.to_numpy()
+
+
+
+
+def getGraph(data,allEvents,ev,window=5,step=10):
+  ''' Function to graph a single event to visualize how the brain activity changes during an event 
+  Arguments: subject's EEG data(df), subjects EEG events(df), event of choice('string'), step size (int), rolling average window size (int)
+  Output: Graph of a single event for a timeframe of 75 ms before and after the event onset (sampling rate = 500 Hz)
+  '''
 # plot figures for how readings change across all 12 subjects for 'HandStart' action
-  plt.style.use('default')
+  plt.style.use('dark_background')
   fig = plt.figure(12, figsize=[50,10])
-  
-  frame = truncFrame(data,events,event)
-  if ave == True:
-    frame = frame.mean(axis=1)
+  plt.title(ev,fontsize=40)
+  plt.xlabel('time',size=20)
+  plt.ylabel('electrodes',size=20)
 
+  frame = truncFrame(data,allEvents,ev,window,step)
+    
   xnew = np.linspace(0, len(frame), 300) # 300 represents number of points to make between T.min and T.max
-
-  spl = make_interp_spline(range(len(frame)), frame, k=3)  # type: BSpline
+  spl = make_interp_spline(range(len(frame)), frame)  # type: BSpline
   power_smooth = spl(xnew)
 
   plt.plot(xnew, power_smooth)
+  # plot event onset, taking into account the dropped rows
+  plt.axvline(xnew[100+window])
+  axes = plt.gca()
+  plt.text(xnew[100+window]+0.1,axes.get_ylim()[1]-0.1,'Event Onset', size=20)
   plt.show()
 
 
-## Get Batches for the CNN
-def getBatch(data, events, num_samples, Test=False):
-    
-    num_features = 32 # number of electrodes
-    window_size = 512 # window size (number of previous timesteps we want to consider when making predictions)
-    
+
+
+def getBatchTest(data, events, num_samples, test=False, test1Trial=False):
+  ''' Function to create batches from data for training/testing
+  Arguments: subject's EEG data(df), subjects EEG events(df), number of samples(int), test (boolean), test1Trial (boolean)
+  Output: Subjects EEG data (batches of size 2000x256x32) (DoubleTensor), The corresponding events (DoubleTensor)
+  '''
+  num_features = 32 # number of electrodes
+  window_size = 512
+  # for demo animation
+  if test1Trial==True:
+    num_samples = (3400 - 1000)
+    indexes = np.arange(1000, 3400)
+  # for training and testing
+  else:
     index = random.randint(window_size, len(data) - 16 * num_samples) # choose  a starting index: a number bigger than 1024 (window size) and less than the number of indexes that will be used by the batch
+    
     if Test == False:
         indexes = np.arange(index, index + 16*num_samples, 16)
 
@@ -228,29 +233,29 @@ def getBatch(data, events, num_samples, Test=False):
         index = random.randint(window_size, len(data) - num_samples) # much smaller dataset so dont have to make the 16 step jump between single batches
         indexes = np.arange(index, index + num_samples)
 
-    X = np.zeros((num_samples, num_features, window_size//2))
-    
-    b = 0
-    for i in indexes:
-        
-        start = i - window_size if i - window_size > 0 else 0
-        
-        tmp = data.iloc[start:i,:]
-        X[b,:,:] = tmp[::2].transpose()
-        
-        b += 1
-    y = events[events.index.isin(indexes)]
-    y = y.to_numpy()
+  X = np.zeros((num_samples, num_features, window_size//2))
+  b = 0
 
-    return torch.DoubleTensor(X), torch.DoubleTensor(y) 
+  for i in indexes:
+        
+      start = i - window_size if i - window_size > 0 else 0
+        
+      tmp = data.iloc[start:i,:]
+      X[b,:,:] = tmp[::2].transpose()
+      b += 1
+  y = events[events.index.isin(indexes)]
+  y = y.to_numpy()
+
+  return torch.DoubleTensor(X), torch.DoubleTensor(y)  
 
 
-## Function to Train Subject Data
-from tqdm import tqdm
+
+
 def train(model, Xtrain, ytrain, epochs, batch_size,verbos=1):
-#model.train() tells your model that you are training the model. So effectively layers 
-#like dropout, batchnorm etc. which behave different on the train and test procedures 
-#know what is going on and hence can behave accordingly.
+  ''' Function to train the model using batches of data
+  Arguments: model, Xtrain (double tensor), ytrain (double tensor), epochs (int), batch_size (int),verbos (int)
+  Output: trained model
+  '''
   optimizer = torch.optim.Adadelta(model.parameters(), lr=1, eps=1e-10)
   model.train()
   for epoch in range(epochs):
@@ -272,9 +277,13 @@ def train(model, Xtrain, ytrain, epochs, batch_size,verbos=1):
       total_loss = 0
 
 
-## function to get predictions
+
+
 def getPredictions(model,Xtest,ytest,window_size,batch_size):
-  
+  ''' Function to predict using the trained model and batches of data
+  Arguments: model, Xtest(double tensor) , ytest(double tensor) , window_size(int) , batch_size(int)
+  Output: y pred (array), y test (array)
+  '''
   model.eval()
 
   p = []
@@ -287,7 +296,6 @@ def getPredictions(model,Xtest,ytest,window_size,batch_size):
     x_test = (x_test)
 
     preds = model(x_test)
-    #preds = preds.squeeze(1)
 
     p.append(np.array(preds.data))
     tru.append(np.array(y_test.data))
@@ -302,9 +310,11 @@ def getPredictions(model,Xtest,ytest,window_size,batch_size):
     test = np.vstack((test,i))
   return preds, test
 
-# CNN model used for train and test:
+
+
 
 class CNN(nn.Module):
+  ''' PyTorch CNN Model'''
   def __init__(self):
     super().__init__()
 
@@ -334,7 +344,11 @@ class CNN(nn.Module):
         
     return torch.sigmoid(out)
 
+
+
+
 class LR(nn.Module):
+  ''' PyTorch Log Reg Model'''
   def __init__(self):
     super().__init__()
 
@@ -353,40 +367,24 @@ class LR(nn.Module):
 
     return torch.sigmoid(out)
 
-## FUnctions for The Animation Demo
 
-# Batch Function extracting only the first trial from the subjects test set
-# batch
 
-## Get Batches for the CNN
-def getBatchV2(test_data,test_events):  
-  num_features = 32 # number of electrodes
-  window_size = 512 # window size (number of previous timesteps we want to consider when making predictions)
-  # here we are predicting for trial 1 in this series
-  num_samples = 3400 - 1000
- # much smaller dataset so dont have to make the 16 step jump between single batches
-  indexes = np.arange(1000, 3400)
 
-  X = np.zeros((num_samples, num_features, window_size//2))
-    
-  b = 0
-  for i in indexes:
-    start = i - window_size if i - window_size > 0 else 0    
-    tmp = test_data.iloc[start:i,:]
-    X[b,:,:] = tmp[::2].transpose()
-        
-    b += 1
-  y = test_events[test_events.index.isin(indexes)]
-  y = y.to_numpy()
-
-  return torch.DoubleTensor(X), torch.DoubleTensor(y) 
-
-## Getting the loss between the predictions and true events to oprimize the threshold cut off for each event
 def getLoss(x1true,x2true,x1pred,x2pred):
+  ''' Function to get a loss function for defining a cut off threshold for each event prediction
+  Arguments: first element of y test array (int), last element of y test array (int), first element of y pred array (int), last element of y pred array (int)
+  Output: loss
+  '''
   return sum([abs(x1true-x1pred),abs(x2true-x2pred)])
 
-## Getting the threshold cutoff for each event in the trial
+
+
+
 def getBestThresh(preds,test):
+  ''' Function to get the cut off threshold for each event prediction
+  Arguments: y pred (array), y test(array)
+  Output: best thresholds (dict)
+  '''
   # threshold range
   threshold = list(np.arange(0,1,0.001))
   bestTh = {}
