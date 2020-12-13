@@ -165,13 +165,13 @@ def truncFrame(data,allEvents,ev,step, window):
   Arguments: subject's EEG data(df), subjects EEG events(df), event of choice('string'), step size (int), rolling average window size (int)
   Output: truncated EEG data for the event(df)
   '''
-  motionIndex = events[0][events[0][ev] == 1].index.to_numpy()
-  numRows = len(subjects[0].iloc[motionIndex[0]-100:motionIndex[0+149]+50,:][::step])
+  motionIndex = allEvents[allEvents[ev] == 1].index.to_numpy()
+  numRows = len(data.iloc[motionIndex[0]-100:motionIndex[0+149]+50,:][::step])
   allFrames = np.zeros((numRows,32))
   trials = 0
   i = 0
   while i < len(motionIndex/150):
-    truncFrame = subjects[0].iloc[motionIndex[i]-100:motionIndex[i+149]+50,:][::step].to_numpy()
+    truncFrame = data.iloc[motionIndex[i]-100:motionIndex[i+149]+50,:][::step].to_numpy()
     allFrames += truncFrame
     trials += 1
     i += 150
@@ -189,7 +189,7 @@ def getGraph(data,allEvents,ev,window=5,step=10):
   Output: Graph of a single event for a timeframe of 75 ms before and after the event onset (sampling rate = 500 Hz)
   '''
 # plot figures for how readings change across all 12 subjects for 'HandStart' action
-  plt.style.use('dark_background')
+  plt.style.use('default')
   fig = plt.figure(12, figsize=[50,10])
   plt.title(ev,fontsize=40)
   plt.xlabel('time',size=20)
@@ -275,8 +275,6 @@ def train(model, Xtrain, ytrain, epochs, batch_size,verbos=1):
       
       print(f'\t epoch: {epoch}, iteration: {i}/{len(Xtrain)//batch_size}, loss: {total_loss}')
       total_loss = 0
-
-
 
 
 def getPredictions(model,Xtest,ytest,window_size,batch_size):
