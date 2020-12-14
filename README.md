@@ -21,9 +21,7 @@ For my first data science project, I decided to explore EEG data because of my i
 
 ## Dataset
 
-The Dataset I used is from a Kaggle Competition (LINK) that includes EEG data from subjects performing a series of grasp and lift trials. There were 12 subjects that took part in the experiment, each performing 10 series of trials, and each series included around 30 trials. The video on the right hand side represents a single trial. The subject was asked to perform the tasks as soon as the light goes on. The graph right below the video represents the 6 tasks during a single trial. Each task is given a value of 1 if it’s happening at a point in time and 0 otherwise.
-
-![alt text](https://github.com/Atlaskz/Bionic-AI-Predicting-Grasp-and-Lift-Motions/blob/main/Images/motions.mp4?style=centerme)
+The Dataset I used is from a Kaggle Competition (LINK) that includes EEG data from subjects performing a series of grasp and lift trials. There were 12 subjects that took part in the experiment, each performing 10 series of trials, and each series included around 30 trials. [This video](https://youtu.be/XmgohaEAdjg) represents a single trial. The subject was asked to perform the tasks as soon as the light goes on. The graph below represents the 6 tasks during a single trial. Each task is given a value of 1 if it’s happening at a point in time and 0 otherwise.
 
 ![alt text](https://github.com/Atlaskz/Bionic-AI-Predicting-Grasp-and-Lift-Motions/blob/main/Images/motions.png?style=centerme)
 
@@ -66,7 +64,7 @@ Below is a graph of the AUC score from my 6 models. AUC score was what was requi
 
 To my surprise, scenario 1 performed the worst (I was expecting the general model from scenario 2 to be the worst). While the advanced model from scenario 3 performed best with an AUC score of 92.8%. This suggests that the model can successfully learn from patterns that are more defined in some subjects and use them towards making predictions for others. It is also clear that the CNN performed better than the Log Reg model in all 3 scenarios. However, as you can see, score difference was small in all scenarios and the CNN took considerably longer than the base model to train. I would like to explore the possibility of improving the performance of the Logistic regression model without having to do any feature engineering. More on that below.
 
-I have created a short demo showing the true events and the corresponding predictions that I got from the best model above. The lower graph represents the activity of the 32 electrodes during the trial. In the top graph, the true events are shown in orange and their prediction is shown right below each in blue. 
+I have created a [short demo](https://youtu.be/HbB8mPIOpm0) showing the true events and the corresponding predictions that I got from the best model above. The lower graph represents the activity of the 32 electrodes during the trial. In the top graph, the true events are shown in orange and their prediction is shown right below each in blue. 
 
  you can see that the orange and blue lines align pretty nicely. The least overlap is seen in event 5, which could either be due to the event itself or the loss function I have defined for finding the threshold. This is another area I would like to explore. It is also worth mentioning that each event happened in a timeframe of 75 milliseconds, hence, in event 5, the prediction is delayed by less than 0.15 seconds, which doesn’t seem too bad for a first try.
 
