@@ -1,4 +1,4 @@
-# Bionic AI: Predicting Grasp and Lift Motions
+# Bionic AI
 
 ## Intoduction
 
@@ -15,11 +15,11 @@ Applications of thought predictions include helping individuals with paralysis c
 Eventually, we might even be able to communicate with our beloved pets!
 
 
-Using EEG Signals for Predicting Hand and Arm Movements:
+## Using EEG Signals for Predicting Hand and Arm Movements
 
 For my first data science project, I decided to explore EEG data because of my interest in the human brain. I was stuck between predicting motions and thoughts. However, it turns out that predicting thoughts is a much broader and more abstract problem. Hence, I went with predicting motions. In this post I’ll go over my project, which is using people’s brain activity to predict their hand/arm movements. 
 
-##Dataset
+## Dataset
 
 The Dataset I used is from a Kaggle Competition (LINK) that includes EEG data from subjects performing a series of grasp and lift trials. There were 12 subjects that took part in the experiment, each performing 10 series of trials, and each series included around 30 trials. The video on the right hand side represents a single trial. The subject was asked to perform the tasks as soon as the light goes on. The graph right below the video represents the 6 tasks during a single trial. Each task is given a value of 1 if it’s happening at a point in time and 0 otherwise.
  
