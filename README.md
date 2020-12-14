@@ -62,6 +62,9 @@ Below is a graph of the AUC score from my 6 models. AUC score was what was requi
 
 ![alt text](https://github.com/Atlaskz/Bionic-AI-Predicting-Grasp-and-Lift-Motions/blob/main/Images/results.png?style=centerme)
 
+<p align="center">
+  <img src="https://github.com/Atlaskz/Bionic-AI-Predicting-Grasp-and-Lift-Motions/blob/main/Images/results.png">
+</p>
 To my surprise, scenario 1 performed the worst (I was expecting the general model from scenario 2 to be the worst). While the advanced model from scenario 3 performed best with an AUC score of 92.8%. This suggests that the model can successfully learn from patterns that are more defined in some subjects and use them towards making predictions for others. It is also clear that the CNN performed better than the Log Reg model in all 3 scenarios. However, as you can see, score difference was small in all scenarios and the CNN took considerably longer than the base model to train. I would like to explore the possibility of improving the performance of the Logistic regression model without having to do any feature engineering. More on that below.
 
 I have created a [short demo](https://youtu.be/HbB8mPIOpm0) showing the true events and the corresponding predictions that I got from the best model above. The lower graph represents the activity of the 32 electrodes during the trial. In the top graph, the true events are shown in orange and their prediction is shown right below each in blue. 
