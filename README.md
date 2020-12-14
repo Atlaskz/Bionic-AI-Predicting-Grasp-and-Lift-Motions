@@ -60,8 +60,6 @@ For each scenario, I trained a base model (Logistic Regression) as well as Deep 
 
 Below is a graph of the AUC score from my 6 models. AUC score was what was required by the actual competition. The reason for using AUC as a performance metric is its ability to measure separability of the 2 classes (0s and 1s), which is very important for imbalanced data such as ours.
 
-![alt text](https://github.com/Atlaskz/Bionic-AI-Predicting-Grasp-and-Lift-Motions/blob/main/Images/results.png?style=centerme)
-
 <p align="center">
   <img src="https://github.com/Atlaskz/Bionic-AI-Predicting-Grasp-and-Lift-Motions/blob/main/Images/results.png">
 </p>
