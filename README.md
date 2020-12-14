@@ -54,7 +54,11 @@ For each scenario, I trained a base model (Logistic Regression) as well as Deep 
 
 Below is a graph of the AUC score from my 6 models. AUC score was what was required by the actual competition. The reason for using AUC as a performance metric is its ability to measure separability of the 2 classes (0s and 1s), which is very important for imbalanced data such as ours.
 
-![alt text](https://github.com/Atlaskz/Bionic-AI-Predicting-Grasp-and-Lift-Motions/blob/main/Images/results.png)
+![alt text](https://github.com/Atlaskz/Bionic-AI-Predicting-Grasp-and-Lift-Motions/blob/main/Images/results.png?style=centerme)
+
+<p align="center">
+  <img src="https://github.com/Atlaskz/Bionic-AI-Predicting-Grasp-and-Lift-Motions/blob/main/Images/results.png">
+</p>
 
 To my surprise, scenario 1 performed the worst (I was expecting the general model from scenario 2 to be the worst). While the advanced model from scenario 3 performed best with an AUC score of 92.8%. This suggests that the model can successfully learn from patterns that are more defined in some subjects and use them towards making predictions for others. It is also clear that the CNN performed better than the Log Reg model in all 3 scenarios. However, as you can see, score difference was small in all scenarios and the CNN took considerably longer than the base model to train. I would like to explore the possibility of improving the performance of the Logistic regression model without having to do any feature engineering. More on that below.
 
