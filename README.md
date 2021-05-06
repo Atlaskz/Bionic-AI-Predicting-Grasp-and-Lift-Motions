@@ -1,69 +1,54 @@
-# Bionic AI
+## Realtime Prediction of Muscle Movement Using EEG-based Brain-Machine Interface
 
 ## Intoduction
 
-Around the same time I started on my data science journey, I took an interest in the functionality of the human brain. This is when I began doing more research on Brain Computer Interfaces (BCI). These are devices that allow a direct communication pathway between the brain and an external device. Our thoughts are transmitted through our brain as a series of electrical impulses. These are then picked up by a computer from the brain using EEG(electroencephalography) and from muscles using EMG(electromyography). 
-
-BCIs are not a new technology, they started being used in the 70s for understanding the brain. However, in the past few years, researchers have been looking at whether these electrical signals can be decoded to give an insight into the person’s thoughts, or in other words, read their mind.
-
-## Applications
-
-How does this create an impact? Well, being able to analyze a person’s thoughts means the opportunity to predict their mental and emotional state as well as their muscle movements. One of the significant applications of muscle movement prediction is in creating robotic prosthetics. There are currently companies that develop prosthetics that use the amputee’s brain activity for movement and control, expanding their range of functionality to a new level.
-
-Applications of thought predictions include helping individuals with paralysis control wheelchairs, enabling individuals with speech disorders communicate their thoughts, and even allowing people speaking different languages communicate without speaking.
-
-Eventually, we might even be able to communicate with our beloved pets!
-
-
-## Using EEG Signals for Predicting Hand and Arm Movements
-
-For my first data science project, I decided to explore EEG data because of my interest in the human brain. I was stuck between predicting motions and thoughts. However, it turns out that predicting thoughts is a much broader and more abstract problem. Hence, I went with predicting motions. In this post I’ll go over my project, which is using people’s brain activity to predict their hand/arm movements. 
+This project aims to predict a person's intended hand and arm movement using their brain activity. The data was collected during an experiment where subjects performed a series of grasp and lift trials while wearing a 64 channel EEG headset. 
 
 ## Dataset
 
-The Dataset I used is from a Kaggle Competition (LINK) that includes EEG data from subjects performing a series of grasp and lift trials. There were 12 subjects that took part in the experiment, each performing 10 series of trials, and each series included around 30 trials. [This video](https://youtu.be/XmgohaEAdjg) represents a single trial. The subject was asked to perform the tasks as soon as the light goes on. The graph below represents the 6 tasks during a single trial. Each task is given a value of 1 if it’s happening at a point in time and 0 otherwise.
+The [Dataset](https://www.kaggle.com/c/grasp-and-lift-eeg-detection) was uploaded to Kaggle and used for a competition in 2015. It contains data collected from 12 subjects, each performing 10 series of trials. [This video](https://youtu.be/XmgohaEAdjg) represents the 6 movements included within a single trial. The subjects were asked to perform the tasks as the light goes on. The graph below represents these tasks as a function of time. Each task is represented by 1 during its occurence and 0 otherwise.
 
 ![alt text](https://github.com/Atlaskz/Bionic-AI-Predicting-Grasp-and-Lift-Motions/blob/main/Images/motions.png?style=centerme)
 
-Let’s take a closer look at a single event within a trial. The top figure represents the 32 electrodes that the signals are being collected from (in black). The bottom graph shows a smoothed version of these electrodes’ activity in a timeframe of 50 millisecond before, and 100 millisecond after the event onset (Called “HandStart”). Notice that the sampling rate is 500 Hz, which means the readings were collected every 2 milliseconds. 
+The below figure represents information about the first task. The top figure represents the 32 electrodes that the signals are being collected from (in black). The bottom graph represents a downsampled version of the electrodes’ activity in a timeframe of 50 millisecond before, and 100 millisecond after the event onset (here Called “HandStart”). The sampling rate is 500 Hz, meaning the readings were collected every 2 milliseconds. 
 
 ![alt text](https://github.com/Atlaskz/Bionic-AI-Predicting-Grasp-and-Lift-Motions/blob/main/Images/e1.png?style=centerme)
 
 
-You can see how the subject’s brain activity changes as they perform the task. It is worth mentioning that seeing this defined pattern is not always so easy. Usually the signals are affected by noise and artifacts from the surroundings and the person’s thoughts. Have a look at 2 other events from the same subject:
+The above graph has a distinct peak reflecting the action potential collected by electrodes placed on the motor cortex. However, such peaks are not always observable when using non invasive EEG devices. This is mainly due to the noise and artifacts resulting from the large distance between the electrodes and the signal source. The following are collected from task 2 and 3 of the trial:
 
 
 ![alt text](https://github.com/Atlaskz/Bionic-AI-Predicting-Grasp-and-Lift-Motions/blob/main/Images/e2.png?style=centerme)
 
 ![alt text](https://github.com/Atlaskz/Bionic-AI-Predicting-Grasp-and-Lift-Motions/blob/main/Images/e3.png?style=centerme)
 
-
-Because of this, the task of identifying patterns and making predictions based on them is not always so easy, this is why as many as 30 trials were performed for each subject.
+In order to overcome this probelm, noise reduction methods such as Independent Component Analysis are used. However, this wasn't the main focus of this project.
 
 ## Training
 
-Since this is a timeseries analysis, it is very important to use previous timepoints for future predictions. The input to my ML algorithm is batches of data, each with a size of 2000. Each of the 2000 sample points also includes 512 prior timepoints (window size = 512). However, I considered every second point in order to reduce the training time. Hence, my batch size was 2000x256x32.
+Due to the timeseries nature of EEG data, previous timepoints are used as features during training. The input to the model is a 3d array of data in batches of size 2000. Each batch includes a single reading and 511 previous timepoints (window size = 512). However, to downsample the data, every other time point was used, resulting in a window size of 256. Given that data was colected from 32 electrodes, the shape of the arrays used in training were 2000x256x32.
 
-On the other side, I have 6 outputs for the 6 different events. I treated each event as a binary classification problem rather than categorical classification since more than one event can happen at once.
+There are 6 depended variables each representing one of the 6 tasks. When training the model, a binary cross entropy loss was used rather than categorical to allow for independent prediction of each task. This is because events overlapped at some instances of a each trial (see the figure above).
 
-In order to compare different models, I created 3 scenarios: 
+In order to compare performance, 3 scenarios were designed: 
 
-1. Training the model on each subject’s EEG data individually
-2. Training the model on all subjects EEG data
-3. Training the Model once on all the EEG data and a second time on each subjects data individually
+1. Training the model for subject individually
+2. Training the model on all subjects 
+3. Training the Model once on all subjects and a second time on each subject individually
 
-The reason behind using these scenarios was that I was curious if people’s brain activity is similar when they perform the same task, and if a general model can be used to predict motion for any individual.
+The aim of creating these scenarios was to explore the potential of creating a general model that performs well on new subjects.
 
-For each scenario, I trained a base model (Logistic Regression) as well as Deep Learning Model (CNN) in order to compare the results from using deep learning vs traditional AI algorithms for decoding brain activity.
+For each scenario, a base model (Logistic Regression) and a Deep Learning Model (1D Convolutional Neural Network) were trained.
 
 ## Results
 
-Below is a graph of the AUC score from my 6 models. AUC score was what was required by the actual competition. The reason for using AUC as a performance metric is its ability to measure separability of the 2 classes (0s and 1s), which is very important for imbalanced data such as ours.
+Below is a graph of the AUC score from the 6 models. AUC was used as the performance metric due to is its ability to measure separability of the 2 classes (0s and 1s), which is important for imbalanced data.
 
 <p align="center">
   <img src="https://github.com/Atlaskz/Bionic-AI-Predicting-Grasp-and-Lift-Motions/blob/main/Images/results.png">
 </p>
-To my surprise, scenario 1 performed the worst (I was expecting the general model from scenario 2 to be the worst). While the advanced model from scenario 3 performed best with an AUC score of 92.8%. This suggests that the model can successfully learn from patterns that are more defined in some subjects and use them towards making predictions for others. It is also clear that the CNN performed better than the Log Reg model in all 3 scenarios. However, as you can see, score difference was small in all scenarios and the CNN took considerably longer than the base model to train. I would like to explore the possibility of improving the performance of the Logistic regression model without having to do any feature engineering. More on that below.
+
+As shown in the figure above, scenario 1 performed the worst while the advanced model from scenario 3 performed best with an AUC score of 92.8%. This suggests that. It is also clear that the CNN performed better than the Log Reg model in all 3 scenarios. However, as you can see, score difference was small in all scenarios and the CNN took considerably longer than the base model to train. I would like to explore the possibility of improving the performance of the Logistic regression model without having to do any feature engineering. More on that below.
 
 I have created a [short demo](https://youtu.be/HbB8mPIOpm0) showing the true events and the corresponding predictions that I got from the best model above. The lower graph represents the activity of the 32 electrodes during the trial. In the top graph, the true events are shown in orange and their prediction is shown right below each in blue. 
 
