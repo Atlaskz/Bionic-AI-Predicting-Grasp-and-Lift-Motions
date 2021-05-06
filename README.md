@@ -55,7 +55,7 @@ To demonstrate the reatime predictions a [short demo](https://youtu.be/HbB8mPIOp
 In the top graph, the least overlap is observed in event 5, which could be a result of the custom loss function created for finding a threshold for the binary classification. However, each event occurs in a timeframe of 75 milliseconds, which means event 5's prediction is delayed by less than 0.075 seconds only.
 
 
-## Wrapping up
+## Discussion
 
 In this project, the use of deep learning for decoding brain activity was explored. It was obsevered that with enough data and a large number of subjects, a general model can perform well on new subjects. However, for this to be used in prosthetics, anything less than 100% accuracy is not good enough. Hence, sufficient data needs to be collected and such models would have to be tuned for maximizingtheir performance.
 
