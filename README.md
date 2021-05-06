@@ -48,16 +48,14 @@ Below is a graph of the AUC score from the 6 models. AUC was used as the perform
   <img src="https://github.com/Atlaskz/Bionic-AI-Predicting-Grasp-and-Lift-Motions/blob/main/Images/results.png">
 </p>
 
-As shown in the figure above, scenario 1 performed the worst while the advanced model from scenario 3 performed best. The aim of this project was to explore the potential of creating a general model that works well on new subjects. As seen in results from scenario 2, a deel learning model can predict these moevmengts for a new subject with an average accuarcy of X%.
+As shown in the figure above, scenario 1 performed the worst while the advanced model from scenario 3 performed best. The aim of this project was to explore the potential of creating a general model that works well on new subjects. As seen in results from scenario 2, a CNN can predict these moevments for a new subject with an average accuarcy of X%.
 
-I have created a [short demo](https://youtu.be/HbB8mPIOpm0) showing the true events and the corresponding predictions that I got from the best model above. The lower graph represents the activity of the 32 electrodes during the trial. In the top graph, the true events are shown in orange and their prediction is shown right below each in blue. 
+To demonstrate the reatime predictions a [short demo](https://youtu.be/HbB8mPIOpm0) was created for a single trial. The above graph shows the true events (in orange) and the corresponding predictions (in blue). The lower graph represents the activity of the 32 electrodes during the trial.
 
- you can see that the orange and blue lines align pretty nicely. The least overlap is seen in event 5, which could either be due to the event itself or the loss function I have defined for finding the threshold. This is another area I would like to explore. It is also worth mentioning that each event happened in a timeframe of 75 milliseconds, hence, in event 5, the prediction is delayed by less than 0.15 seconds, which doesn’t seem too bad for a first try.
+In the top graph, the least overlap is observed in event 5, which could be a result of the custom loss function created for finding a threshold for the binary classification. However, each event occurs in a timeframe of 75 milliseconds, which means event 5's prediction is delayed by less than 0.075 seconds only.
 
 
 ## Wrapping up
 
-I had a blast working on this problem as my first real data science project. If I decided to improve the accuracy, I would spend more time on signal processing to reduce the noise in the data. I would also try other deep learning algorithms and compare more models. I have a slight bias towards using deep learning for this problem due to its end to end optimization and the elimination of the feature engineering step. This is important since having to feature engineer the incoming data could increase prediction delay in real time. 
-
-Speaking of real time, I thought it would be very interesting to test the performance of the model for actual prediction. Hence, for my next project, I am hoping to use a muse EEG headset or a similar product for predicting sentiment from brain activity in real time.
+In this project, the use of deep learning for decoding brain activity was explored. It was obsevered that with enough data and a large number of subjects, a general model can perform well on new subjects. However, for this to be used in prosthetics, anything less than 100% accuracy is not good enough. Hence, sufficient data needs to be collected and such models would have to be tuned for maximizingtheir performance.
 
