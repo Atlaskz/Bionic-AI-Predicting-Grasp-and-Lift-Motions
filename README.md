@@ -32,8 +32,8 @@ There are 6 depended variables each representing one of the 6 tasks. When traini
 
 In order to compare performance, 3 scenarios were designed: 
 
-1. Training the model for subject individually
-2. Training the model on all subjects 
+1. Training a model for each subject individually
+2. Training a general model on all subjects and testing on a new subject 
 3. Training the Model once on all subjects and a second time on each subject individually
 
 The aim of creating these scenarios was to explore the potential of creating a general model that performs well on new subjects.
@@ -48,7 +48,7 @@ Below is a graph of the AUC score from the 6 models. AUC was used as the perform
   <img src="https://github.com/Atlaskz/Bionic-AI-Predicting-Grasp-and-Lift-Motions/blob/main/Images/results.png">
 </p>
 
-As shown in the figure above, scenario 1 performed the worst while the advanced model from scenario 3 performed best with an AUC score of 92.8%. This suggests that. It is also clear that the CNN performed better than the Log Reg model in all 3 scenarios. However, as you can see, score difference was small in all scenarios and the CNN took considerably longer than the base model to train. I would like to explore the possibility of improving the performance of the Logistic regression model without having to do any feature engineering. More on that below.
+As shown in the figure above, scenario 1 performed the worst while the advanced model from scenario 3 performed best. The aim of this project was to explore the potential of creating a general model that works well on new subjects. As seen in results from scenario 2, a deel learning model can predict these moevmengts for a new subject with an average accuarcy of X%.
 
 I have created a [short demo](https://youtu.be/HbB8mPIOpm0) showing the true events and the corresponding predictions that I got from the best model above. The lower graph represents the activity of the 32 electrodes during the trial. In the top graph, the true events are shown in orange and their prediction is shown right below each in blue. 
 
