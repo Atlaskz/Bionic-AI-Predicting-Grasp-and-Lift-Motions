@@ -10,19 +10,19 @@ The [Dataset](https://www.kaggle.com/c/grasp-and-lift-eeg-detection) was uploade
 
 ![alt text](https://github.com/Atlaskz/Bionic-AI-Predicting-Grasp-and-Lift-Motions/blob/main/Images/motions.png?style=centerme)
 
-The below figure represents information about the first task. The top figure represents the 32 electrodes that the signals are being collected from (in black). The bottom graph represents a downsampled version of the electrodes’ activity in a timeframe of 50 millisecond before, and 100 millisecond after the event onset (here Called “HandStart”). The sampling rate is 500 Hz, meaning the readings were collected every 2 milliseconds. 
+The below figure represents a downsampled version of the electrodes’ activity in a timeframe of 50 millisecond before, and 100 millisecond after the event onset for the first task (Called “HandStart”). The sampling rate is 500 Hz, which means the readings were collected every 2 milliseconds. 
 
 ![alt text](https://github.com/Atlaskz/Bionic-AI-Predicting-Grasp-and-Lift-Motions/blob/main/Images/e1.png?style=centerme)
 
 
-The above graph has a distinct peak reflecting the action potential collected by electrodes placed on the motor cortex. However, such peaks are not always observable when using non invasive EEG devices. This is mainly due to the noise and artifacts resulting from the large distance between the electrodes and the signal source. The following are collected from task 2 and 3 of the trial:
+The above graph has a distinct peak reflecting the action potential collected by electrodes placed on the motor cortex. Such peaks are not always observable when using a non invasive EEG device. This is mainly due to the noise and artifacts resulting from the large distance between the electrodes and the signal source. The following figures represent tasks 2 and 3 of the same trial:
 
 
 ![alt text](https://github.com/Atlaskz/Bionic-AI-Predicting-Grasp-and-Lift-Motions/blob/main/Images/e2.png?style=centerme)
 
 ![alt text](https://github.com/Atlaskz/Bionic-AI-Predicting-Grasp-and-Lift-Motions/blob/main/Images/e3.png?style=centerme)
 
-In order to overcome this probelm, noise reduction methods such as Independent Component Analysis are used. However, this wasn't the main focus of this project.
+In order to make such peaks more defined and observable, noise reduction methods such as Independent Component Analysis are used. However, this wasn't the main focus of this project.
 
 ## Training
 
